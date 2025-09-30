@@ -1,0 +1,22 @@
+# Dependencias para el cliente Python
+# Este proyecto usa solo librerías estándar de Python
+# No se requieren dependencias adicionales
+
+# Las siguientes librerías son parte de la biblioteca estándar:
+# - tkinter (GUI)
+# - socket (comunicación TCP)
+# - threading (hilos)
+# - datetime (fechas y tiempo)
+# - json (formato de datos)
+
+# Para Python 3.6 o superior
+# tkinter viene incluido con Python en la mayoría de distribuciones
+
+# Si tkinter no está disponible (raro en sistemas modernos), instalar:
+# Ubuntu/Debian: sudo apt-get install python3-tk
+# CentOS/RHEL: sudo yum install tkinter
+# Windows: tkinter viene incluido por defecto
+# macOS: tkinter viene incluido por defecto
+
+# Verificar instalación:
+# python3 -c "import tkinter; print('tkinter disponible')"
