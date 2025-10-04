@@ -9,26 +9,26 @@ LDFLAGS = -lpthread
 # Nombre del ejecutable
 TARGET = server
 
-# Archivos fuente (versión refactorizada)
-SOURCES = server_refactored.c socket_manager.c client_manager.c vehicle.c logger.c protocol.c
+# Source files (consolidated version)
+SOURCES = server.c socket_manager.c vehicle.c client_protocol.c
 OBJECTS = $(SOURCES:.c=.o)
 
 # Regla principal
 all: $(TARGET)
 
-# Compilar el servidor refactorizado
+# Compile the consolidated server
 $(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS)
-	@echo "Servidor refactorizado compilado exitosamente: $(TARGET)"
+	@echo "Consolidated server compiled successfully: $(TARGET)"
 
 # Compilar archivos objeto
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Limpiar archivos compilados
+# Clean compiled files
 clean:
 	rm -f $(TARGET) $(OBJECTS)
-	@echo "Archivos de compilación eliminados"
+	@echo "Compiled files removed"
 
 # Instalar el servidor (copiar a /usr/local/bin)
 install: $(TARGET)

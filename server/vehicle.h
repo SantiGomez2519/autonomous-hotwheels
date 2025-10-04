@@ -9,6 +9,7 @@ typedef struct {
     int battery;        // percentage (0-100)
     int temperature;    // celsius degrees
     char direction[20]; // LEFT, RIGHT, STRAIGHT
+    time_t last_update; // timestamp of last battery update
     pthread_mutex_t mutex;
 } vehicle_state_t;
 
@@ -20,6 +21,8 @@ void vehicle_set_speed(vehicle_state_t* vehicle, int speed);
 void vehicle_set_direction(vehicle_state_t* vehicle, const char* direction);
 int vehicle_speed_up(vehicle_state_t* vehicle);
 int vehicle_slow_down(vehicle_state_t* vehicle);
+void vehicle_update_battery(vehicle_state_t* vehicle);
+void vehicle_recharge_battery(vehicle_state_t* vehicle);
 void vehicle_format_telemetry(vehicle_state_t* vehicle, char* buffer, size_t buffer_size);
 
 #endif // VEHICLE_H
