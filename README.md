@@ -2,6 +2,30 @@
 
 This project implements a client-server system that simulates an autonomous vehicle that sends telemetry data (speed, battery, and temperature) and receives control commands. The system uses TCP sockets with Berkeley API and a custom application protocol.
 
+## 👥 Authors
+
+- **Santiago Gómez Ospina**
+- **Isabella Camacho**
+- **Sofía Flores**
+
+## 📋 Table of Contents
+
+- [🌟 Key Features](#-key-features)
+- [🏗️ Project Structure](#️-project-structure)
+- [🚀 Installation and Setup](#-installation-and-setup)
+- [📖 Execution Instructions](#-execution-instructions)
+- [🎮 System Usage](#-system-usage)
+- [📊 Telemetry Data](#-telemetry-data)
+- [📝 Communication Protocol](#-communication-protocol)
+- [🔧 Makefile Commands](#-makefile-commands)
+- [🐛 Troubleshooting](#-troubleshooting)
+- [📋 Logging and Monitoring](#-logging-and-monitoring)
+- [🧪 Testing](#-testing)
+- [🔒 Security](#-security)
+- [🏗️ Architecture](#️-architecture)
+- [📄 License](#-license)
+- [📞 Support](#-support)
+
 ## 🌟 Key Features
 
 - **Modular C Server** with multi-client support using pthreads
@@ -366,14 +390,6 @@ Both clients follow a similar modular pattern:
 - **GUI Module**: User interface and event handling
 - **Network Module**: Communication with the server
 - **Data Module**: Vehicle data management
-
-## 🤝 Contributing
-
-1. Fork the project
-2. Create a feature branch (`git checkout -b feature/new-functionality`)
-3. Commit your changes (`git commit -am 'Add new functionality'`)
-4. Push to the branch (`git push origin feature/new-functionality`)
-5. Create a Pull Request
 
 ## 📄 License
 
