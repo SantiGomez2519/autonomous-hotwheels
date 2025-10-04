@@ -391,13 +391,7 @@ Both clients follow a similar modular pattern:
 - **Network Module**: Communication with the server
 - **Data Module**: Vehicle data management
 
-## 📄 License
-
-This project is for educational purposes as part of the Telematics course.
-
 ## 📞 Support
-
-For problems or questions:
 
 1. Review the documentation in `docs/protocolo.md`
 2. Check server logs
