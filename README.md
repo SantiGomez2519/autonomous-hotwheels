@@ -23,7 +23,6 @@ This project implements a client-server system that simulates an autonomous vehi
 - [🧪 Testing](#-testing)
 - [🔒 Security](#-security)
 - [🏗️ Architecture](#️-architecture)
-- [📄 License](#-license)
 - [📞 Support](#-support)
 
 ## 🌟 Key Features
