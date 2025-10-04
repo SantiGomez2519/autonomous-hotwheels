@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Modelo de datos del vehículo
-Contiene el estado actual del vehículo y métodos para actualizarlo
+Vehicle data model
+Contains the current vehicle state and methods to update it
 """
 
 class VehicleData:
@@ -12,7 +12,7 @@ class VehicleData:
         self.direction = 'STRAIGHT'
     
     def update_from_server_data(self, parts):
-        """Actualizar datos desde respuesta del servidor"""
+        """Update data from server response"""
         if len(parts) >= 4:
             try:
                 self.speed = max(0, min(100, int(parts[1])))
@@ -20,7 +20,7 @@ class VehicleData:
                 self.temperature = int(parts[3])
                 self.direction = parts[4] if len(parts) > 4 else 'STRAIGHT'
             except (ValueError, IndexError):
-                # Mantener valores actuales si hay error de parsing
+                # Keep current values if there's a parsing error
                 pass
     
     def get_speed_display(self):

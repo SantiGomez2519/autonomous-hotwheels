@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-// Tipos de log
+// Log types
 typedef enum {
     LOG_SERVER_START,
     LOG_CONNECT,
@@ -23,19 +23,19 @@ typedef enum {
     LOG_DISCONNECT_REQUEST
 } log_type_t;
 
-// Estructura del logger
+// Logger structure
 typedef struct {
     FILE* log_file;
     char* filename;
 } logger_t;
 
-// Funciones de logging
+// Logging functions
 int logger_init(logger_t* logger, const char* filename);
 void logger_cleanup(logger_t* logger);
 void logger_log(logger_t* logger, log_type_t type, const char* ip, int port, const char* message);
 void logger_log_simple(logger_t* logger, log_type_t type, const char* message);
 
-// Funciones auxiliares para logging
+// Helper functions for logging
 const char* logger_type_to_string(log_type_t type);
 void logger_print_timestamp(FILE* file);
 

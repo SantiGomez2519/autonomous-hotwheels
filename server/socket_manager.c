@@ -8,37 +8,37 @@
 int socket_manager_init(socket_manager_t* manager, int port) {
     if (!manager) return -1;
     
-    // Crear socket del servidor
+    // Create server socket
     manager->server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (manager->server_socket < 0) {
-        perror("Error creando socket");
+        perror("Error creating socket");
         return -1;
     }
     
-    // Configurar opciones del socket
+    // Configure socket options
     int opt = 1;
     if (setsockopt(manager->server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-        perror("Error configurando socket");
+        perror("Error configuring socket");
         close(manager->server_socket);
         return -1;
     }
     
-    // Configurar dirección del servidor
+    // Configure server address
     manager->server_addr.sin_family = AF_INET;
     manager->server_addr.sin_addr.s_addr = INADDR_ANY;
     manager->server_addr.sin_port = htons(port);
     manager->port = port;
     
-    // Vincular socket
+    // Bind socket
     if (bind(manager->server_socket, (struct sockaddr*)&manager->server_addr, sizeof(manager->server_addr)) < 0) {
-        perror("Error vinculando socket");
+        perror("Error binding socket");
         close(manager->server_socket);
         return -1;
     }
     
-    // Escuchar conexiones
+    // Listen for connections
     if (listen(manager->server_socket, MAX_CLIENTS) < 0) {
-        perror("Error escuchando conexiones");
+        perror("Error listening for connections");
         close(manager->server_socket);
         return -1;
     }
@@ -54,7 +54,7 @@ int socket_manager_accept_client(socket_manager_t* manager, struct sockaddr_in* 
     
     if (client_socket < 0) {
         if (errno != EINTR) {
-            perror("Error aceptando conexión");
+            perror("Error accepting connection");
         }
         return -1;
     }
@@ -74,7 +74,7 @@ int socket_send_data(int socket, const char* data, size_t length) {
     
     ssize_t bytes_sent = send(socket, data, length, 0);
     if (bytes_sent < 0) {
-        perror("Error enviando datos");
+        perror("Error sending data");
         return -1;
     }
     
@@ -86,7 +86,7 @@ int socket_receive_data(int socket, char* buffer, size_t buffer_size) {
     
     ssize_t bytes_received = recv(socket, buffer, buffer_size - 1, 0);
     if (bytes_received < 0) {
-        perror("Error recibiendo datos");
+        perror("Error receiving data");
         return -1;
     }
     

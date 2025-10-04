@@ -6,12 +6,12 @@
 #include <netinet/in.h>
 #include "socket_manager.h"
 
-// Constantes de cliente
+// Client constants
 #define MAX_USERNAME 50
 #define MAX_PASSWORD 50
 #define CLIENT_TIMEOUT_SECONDS 300
 
-// Estructura para representar un cliente conectado
+// Structure to represent a connected client
 typedef struct {
     int socket;
     char ip[INET_ADDRSTRLEN];
@@ -22,14 +22,14 @@ typedef struct {
     time_t last_activity;
 } client_t;
 
-// Estructura para el gestor de clientes
+// Structure for client manager
 typedef struct {
     client_t clients[MAX_CLIENTS];
     int client_count;
     pthread_mutex_t mutex;
 } client_manager_t;
 
-// Funciones de gestión de clientes
+// Client management functions
 void client_manager_init(client_manager_t* manager);
 void client_manager_cleanup(client_manager_t* manager);
 int client_manager_add_client(client_manager_t* manager, int socket, const char* ip, int port);

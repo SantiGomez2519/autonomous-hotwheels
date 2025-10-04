@@ -1,6 +1,6 @@
 /**
- * Modelo de datos del vehículo
- * Contiene el estado actual del vehículo y métodos para actualizarlo
+ * Vehicle data model
+ * Contains the current vehicle state and methods to update it
  */
 public class VehicleData {
     private int speed = 0;
@@ -31,7 +31,7 @@ public class VehicleData {
         this.direction = direction != null ? direction : "STRAIGHT"; 
     }
     
-    // Actualizar desde datos del servidor
+    // Update from server data
     public void updateFromServerData(String[] parts) {
         if (parts.length >= 4) {
             try {
@@ -40,12 +40,12 @@ public class VehicleData {
                 setTemperature(Integer.parseInt(parts[3]));
                 setDirection(parts.length > 4 ? parts[4] : "STRAIGHT");
             } catch (NumberFormatException e) {
-                // Mantener valores actuales si hay error de parsing
+                // Keep current values if there's a parsing error
             }
         }
     }
     
-    // Formatear para display
+    // Format for display
     public String getSpeedDisplay() { return speed + " km/h"; }
     public String getBatteryDisplay() { return battery + "%"; }
     public String getTemperatureDisplay() { return temperature + "°C"; }

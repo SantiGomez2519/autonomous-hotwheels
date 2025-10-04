@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-GUI para Cliente de Telemetría Vehículo Autónomo - Versión Refactorizada
-Interfaz gráfica usando tkinter con separación de responsabilidades
+GUI for Autonomous Vehicle Telemetry Client - Refactored Version
+Graphical interface using tkinter with separation of responsibilities
 """
 
 import tkinter as tk
@@ -23,13 +23,13 @@ class TelemetryGUI:
         
         # Crear ventana principal
         self.root = tk.Tk()
-        self.root.title("Cliente de Telemetría Vehículo Autónomo - Refactorizado")
+        self.root.title("Autonomous Vehicle Telemetry Client - Refactored")
         self.root.geometry("800x600")
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
         
         # Variables de la interfaz
-        self.connected_var = tk.StringVar(value="Desconectado")
-        self.auth_var = tk.StringVar(value="No autenticado")
+        self.connected_var = tk.StringVar(value="Disconnected")
+        self.auth_var = tk.StringVar(value="Not authenticated")
         self.speed_var = tk.StringVar(value=self.vehicle_data.get_speed_display())
         self.battery_var = tk.StringVar(value=self.vehicle_data.get_battery_display())
         self.temperature_var = tk.StringVar(value=self.vehicle_data.get_temperature_display())

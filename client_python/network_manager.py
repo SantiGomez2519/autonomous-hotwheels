@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Gestor de comunicación de red
-Maneja la conexión TCP y el protocolo de comunicación
+Network communication manager
+Handles TCP connection and communication protocol
 """
 
 import socket
@@ -72,13 +72,13 @@ class NetworkManager:
                     self.on_disconnected()
         except Exception as e:
             if self.on_error:
-                self.on_error(f"Error desconectando: {str(e)}")
+                self.on_error(f"Error disconnecting: {str(e)}")
     
     def authenticate(self, username: str, password: str) -> bool:
-        """Autenticar como administrador"""
+        """Authenticate as administrator"""
         if not self.connected:
             if self.on_error:
-                self.on_error("No hay conexión con el servidor")
+                self.on_error("No connection to server")
             return False
         
         try:
@@ -95,7 +95,7 @@ class NetworkManager:
         """Solicitar datos de telemetría"""
         if not self.connected:
             if self.on_error:
-                self.on_error("No hay conexión con el servidor")
+                self.on_error("No connection to server")
             return False
         return self._send_command("GET_DATA:")
     
@@ -103,7 +103,7 @@ class NetworkManager:
         """Enviar comando de control del vehículo"""
         if not self.connected:
             if self.on_error:
-                self.on_error("No hay conexión con el servidor")
+                self.on_error("No connection to server")
             return False
         
         if not self.is_admin:
@@ -123,7 +123,7 @@ class NetworkManager:
         """Solicitar lista de usuarios conectados"""
         if not self.connected:
             if self.on_error:
-                self.on_error("No hay conexión con el servidor")
+                self.on_error("No connection to server")
             return False
         
         if not self.is_admin:

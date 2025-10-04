@@ -8,11 +8,11 @@ int logger_init(logger_t* logger, const char* filename) {
     
     logger->log_file = fopen(filename, "a");
     if (!logger->log_file) {
-        perror("Error abriendo archivo de logs");
+        perror("Error opening log file");
         return -1;
     }
     
-    // Duplicar el nombre del archivo
+    // Duplicate filename
     logger->filename = malloc(strlen(filename) + 1);
     if (!logger->filename) {
         fclose(logger->log_file);
@@ -48,7 +48,7 @@ void logger_log(logger_t* logger, log_type_t type, const char* ip, int port, con
     fprintf(logger->log_file, "[%s] [%s:%d] [%s] %s\n", timestamp, ip, port, type_str, message);
     fflush(logger->log_file);
     
-    // También imprimir en consola
+    // Also print to console
     printf("[%s] [%s:%d] [%s] %s\n", timestamp, ip, port, type_str, message);
 }
 

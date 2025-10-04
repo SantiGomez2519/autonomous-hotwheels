@@ -5,34 +5,34 @@
 command_type_t protocol_parse_command(const char* command, parsed_command_t* parsed) {
     if (!command || !parsed) return CMD_UNKNOWN;
     
-    // Limpiar estructura
+    // Clear structure
     memset(parsed, 0, sizeof(parsed_command_t));
     
-    // Parsear comando de autenticación
+    // Parse authentication command
     if (sscanf(command, "AUTH: %s %s", parsed->param1, parsed->param2) == 2) {
         parsed->type = CMD_AUTH;
         return CMD_AUTH;
     }
     
-    // Parsear solicitud de datos
+    // Parse data request
     if (strstr(command, "GET_DATA:") != NULL) {
         parsed->type = CMD_GET_DATA;
         return CMD_GET_DATA;
     }
     
-    // Parsear comando de control del vehículo
+    // Parse vehicle control command
     if (sscanf(command, "SEND_CMD: %s", parsed->param1) == 1) {
         parsed->type = CMD_SEND_CMD;
         return CMD_SEND_CMD;
     }
     
-    // Parsear solicitud de lista de usuarios
+    // Parse user list request
     if (strstr(command, "LIST_USERS:") != NULL) {
         parsed->type = CMD_LIST_USERS;
         return CMD_LIST_USERS;
     }
     
-    // Parsear solicitud de desconexión
+    // Parse disconnect request
     if (strstr(command, "DISCONNECT:") != NULL) {
         parsed->type = CMD_DISCONNECT;
         return CMD_DISCONNECT;
@@ -53,7 +53,7 @@ void protocol_handle_command(parsed_command_t* cmd, int client_socket,
     switch (cmd->type) {
         case CMD_AUTH: {
             if (client_index == -1) {
-                strcpy(response, "ERROR: Cliente no encontrado\r\n\r\n");
+                strcpy(response, "ERROR: Client not found\r\n\r\n");
                 break;
             }
             
@@ -69,46 +69,46 @@ void protocol_handle_command(parsed_command_t* cmd, int client_socket,
         
         case CMD_GET_DATA: {
             vehicle_format_telemetry(vehicle, response, sizeof(response));
-            logger_log_simple(logger, LOG_DATA_SENT, "Datos de telemetría enviados");
+            logger_log_simple(logger, LOG_DATA_SENT, "Telemetry data sent");
             break;
         }
         
         case CMD_SEND_CMD: {
             if (client_index == -1) {
-                strcpy(response, "ERROR: Cliente no encontrado\r\n\r\n");
+                strcpy(response, "ERROR: Client not found\r\n\r\n");
                 break;
             }
             
             client_t* client = client_manager_get_client(client_mgr, client_index);
             if (!client || !client->is_admin) {
-                strcpy(response, "ERROR: No autorizado\r\n\r\n");
+                strcpy(response, "ERROR: Not authorized\r\n\r\n");
                 logger_log_simple(logger, LOG_UNAUTHORIZED, "Intento de comando sin autorización");
                 break;
             }
             
-            // Procesar comando de control del vehículo
+            // Process vehicle control command
             if (strcmp(cmd->param1, "SPEED_UP") == 0) {
                 int new_speed = vehicle_speed_up(vehicle);
                 if (new_speed >= 0) {
-                    snprintf(response, sizeof(response), "OK: Velocidad aumentada a %d km/h\r\n\r\n", new_speed);
+                    snprintf(response, sizeof(response), "OK: Speed increased to %d km/h\r\n\r\n", new_speed);
                 } else {
-                    strcpy(response, "ERROR: Velocidad máxima alcanzada\r\n\r\n");
+                    strcpy(response, "ERROR: Maximum speed reached\r\n\r\n");
                 }
             } else if (strcmp(cmd->param1, "SLOW_DOWN") == 0) {
                 int new_speed = vehicle_slow_down(vehicle);
                 if (new_speed >= 0) {
-                    snprintf(response, sizeof(response), "OK: Velocidad reducida a %d km/h\r\n\r\n", new_speed);
+                    snprintf(response, sizeof(response), "OK: Speed reduced to %d km/h\r\n\r\n", new_speed);
                 } else {
-                    strcpy(response, "ERROR: Velocidad mínima alcanzada\r\n\r\n");
+                    strcpy(response, "ERROR: Minimum speed reached\r\n\r\n");
                 }
             } else if (strcmp(cmd->param1, "TURN_LEFT") == 0) {
                 vehicle_set_direction(vehicle, "LEFT");
-                strcpy(response, "OK: Girando a la izquierda\r\n\r\n");
+                strcpy(response, "OK: Turning left\r\n\r\n");
             } else if (strcmp(cmd->param1, "TURN_RIGHT") == 0) {
                 vehicle_set_direction(vehicle, "RIGHT");
-                strcpy(response, "OK: Girando a la derecha\r\n\r\n");
+                strcpy(response, "OK: Turning right\r\n\r\n");
             } else {
-                strcpy(response, "ERROR: Comando no válido\r\n\r\n");
+                strcpy(response, "ERROR: Invalid command\r\n\r\n");
             }
             
             logger_log_simple(logger, LOG_COMMAND_EXECUTED, cmd->param1);
@@ -117,17 +117,17 @@ void protocol_handle_command(parsed_command_t* cmd, int client_socket,
         
         case CMD_LIST_USERS: {
             if (client_index == -1) {
-                strcpy(response, "ERROR: Cliente no encontrado\r\n\r\n");
+                strcpy(response, "ERROR: Client not found\r\n\r\n");
                 break;
             }
             
             client_t* client = client_manager_get_client(client_mgr, client_index);
             if (!client || !client->is_admin) {
-                strcpy(response, "ERROR: No autorizado\r\n\r\n");
+                strcpy(response, "ERROR: Not authorized\r\n\r\n");
                 break;
             }
             
-            // Construir lista de usuarios conectados
+            // Build list of connected users
             strcpy(response, "USERS: ");
             pthread_mutex_lock(&client_mgr->mutex);
             for (int i = 0; i < MAX_CLIENTS; i++) {
@@ -142,20 +142,20 @@ void protocol_handle_command(parsed_command_t* cmd, int client_socket,
             }
             pthread_mutex_unlock(&client_mgr->mutex);
             strcat(response, "\r\n\r\n");
-            logger_log_simple(logger, LOG_USERS_LIST, "Lista de usuarios enviada");
+            logger_log_simple(logger, LOG_USERS_LIST, "User list sent");
             break;
         }
         
         case CMD_DISCONNECT: {
-            strcpy(response, "OK: Desconectando\r\n\r\n");
-            logger_log_simple(logger, LOG_DISCONNECT_REQUEST, "Solicitud de desconexión");
+            strcpy(response, "OK: Disconnecting\r\n\r\n");
+            logger_log_simple(logger, LOG_DISCONNECT_REQUEST, "Disconnect request");
             break;
         }
         
         case CMD_UNKNOWN:
         default: {
-            strcpy(response, "ERROR: Comando no reconocido\r\n\r\n");
-            logger_log_simple(logger, LOG_UNKNOWN_COMMAND, "Comando no reconocido");
+            strcpy(response, "ERROR: Command not recognized\r\n\r\n");
+            logger_log_simple(logger, LOG_UNKNOWN_COMMAND, "Command not recognized");
             break;
         }
     }
@@ -167,7 +167,7 @@ void protocol_send_response(int socket, const char* response, logger_t* logger) 
     if (socket < 0 || !response || !logger) return;
     
     if (send(socket, response, strlen(response), 0) < 0) {
-        perror("Error enviando respuesta");
+        perror("Error sending response");
     }
     logger_log(logger, LOG_RESPONSE, "", 0, response);
 }

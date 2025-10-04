@@ -4,18 +4,18 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-// Constantes de red
+// Network constants
 #define MAX_CLIENTS 50
 #define BUFFER_SIZE 1024
 
-// Estructura para información de socket
+// Structure for socket information
 typedef struct {
     int server_socket;
     int port;
     struct sockaddr_in server_addr;
 } socket_manager_t;
 
-// Funciones de gestión de sockets
+// Socket management functions
 int socket_manager_init(socket_manager_t* manager, int port);
 int socket_manager_accept_client(socket_manager_t* manager, struct sockaddr_in* client_addr);
 void socket_manager_close(socket_manager_t* manager);

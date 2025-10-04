@@ -1,6 +1,6 @@
 /**
- * Gestor de comunicación de red
- * Maneja la conexión TCP y el protocolo de comunicación
+ * Network communication manager
+ * Handles TCP connection and communication protocol
  */
 import java.io.*;
 import java.net.*;
@@ -18,7 +18,7 @@ public class NetworkManager {
     private String username = "";
     private Thread receiveThread;
     
-    // Callbacks para eventos de red
+    // Callbacks for network events
     public interface NetworkEventListener {
         void onConnected();
         void onDisconnected();
@@ -45,7 +45,7 @@ public class NetworkManager {
             authenticated.set(false);
             isAdmin.set(false);
             
-            // Iniciar hilo para recibir mensajes
+            // Start thread to receive messages
             receiveThread = new Thread(this::receiveMessages);
             receiveThread.setDaemon(true);
             receiveThread.start();
@@ -57,7 +57,7 @@ public class NetworkManager {
             return true;
         } catch (IOException e) {
             if (listener != null) {
-                listener.onError("Error conectando: " + e.getMessage());
+                listener.onError("Error connecting: " + e.getMessage());
             }
             return false;
         }
@@ -90,7 +90,7 @@ public class NetworkManager {
     public void authenticate(String username, String password) {
         if (!connected.get()) {
             if (listener != null) {
-                listener.onError("No hay conexión con el servidor");
+                listener.onError("No connection to server");
             }
             return;
         }
@@ -102,7 +102,7 @@ public class NetworkManager {
     public void requestData() {
         if (!connected.get()) {
             if (listener != null) {
-                listener.onError("No hay conexión con el servidor");
+                listener.onError("No connection to server");
             }
             return;
         }
@@ -112,14 +112,14 @@ public class NetworkManager {
     public void sendVehicleCommand(String command) {
         if (!connected.get()) {
             if (listener != null) {
-                listener.onError("No hay conexión con el servidor");
+                listener.onError("No connection to server");
             }
             return;
         }
         
         if (!isAdmin.get()) {
             if (listener != null) {
-                listener.onError("Solo administradores pueden enviar comandos");
+                listener.onError("Only administrators can send commands");
             }
             return;
         }
@@ -130,14 +130,14 @@ public class NetworkManager {
     public void requestUsersList() {
         if (!connected.get()) {
             if (listener != null) {
-                listener.onError("No hay conexión con el servidor");
+                listener.onError("No connection to server");
             }
             return;
         }
         
         if (!isAdmin.get()) {
             if (listener != null) {
-                listener.onError("Solo administradores pueden ver usuarios");
+                listener.onError("Only administrators can view users");
             }
             return;
         }

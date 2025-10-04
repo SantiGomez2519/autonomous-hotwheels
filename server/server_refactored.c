@@ -1,10 +1,10 @@
 /*
- * Servidor de Telemetría para Vehículo Autónomo - Versión Refactorizada
- * Implementa un sistema cliente-servidor con soporte multicliente
- * Arquitectura modular con separación de responsabilidades
+ * Autonomous Vehicle Telemetry Server - Refactored Version
+ * Implements a client-server system with multi-client support
+ * Modular architecture with separation of responsibilities
  * 
- * Compilación: make
- * Uso: ./server <port> <LogsFile>
+ * Compilation: make
+ * Usage: ./server <port> <LogsFile>
  */
 
 #include <stdio.h>
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 
     printf("Servidor iniciado en puerto %d\n", port);
     printf("Archivo de logs: %s\n", log_filename);
-    logger_log(&logger, LOG_SERVER_START, "0.0.0.0", port, "Servidor iniciado");
+    logger_log(&logger, LOG_SERVER_START, "0.0.0.0", port, "Server started");
 
     // Crear hilo para telemetría automática
     pthread_t telemetry_tid;
@@ -155,9 +155,9 @@ void* handle_client(void* arg) {
         
         if (bytes_received <= 0) {
             if (bytes_received == 0) {
-                logger_log(&logger, LOG_DISCONNECT, client->ip, client->port, "Cliente desconectado");
+                logger_log(&logger, LOG_DISCONNECT, client->ip, client->port, "Client disconnected");
             } else {
-                logger_log(&logger, LOG_ERROR, client->ip, client->port, "Error recibiendo datos");
+                logger_log(&logger, LOG_ERROR, client->ip, client->port, "Error receiving data");
             }
             break;
         }

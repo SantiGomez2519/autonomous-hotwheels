@@ -12,7 +12,7 @@ void vehicle_init(vehicle_state_t* vehicle) {
     strcpy(vehicle->direction, "STRAIGHT");
     
     if (pthread_mutex_init(&vehicle->mutex, NULL) != 0) {
-        perror("Error inicializando mutex del vehículo");
+        perror("Error initializing vehicle mutex");
     }
 }
 
@@ -69,7 +69,7 @@ int vehicle_speed_up(vehicle_state_t* vehicle) {
     }
     
     pthread_mutex_unlock(&vehicle->mutex);
-    return -1; // Velocidad máxima alcanzada
+    return -1; // Maximum speed reached
 }
 
 int vehicle_slow_down(vehicle_state_t* vehicle) {
@@ -85,7 +85,7 @@ int vehicle_slow_down(vehicle_state_t* vehicle) {
     }
     
     pthread_mutex_unlock(&vehicle->mutex);
-    return -1; // Velocidad mínima alcanzada
+    return -1; // Minimum speed reached
 }
 
 void vehicle_format_telemetry(vehicle_state_t* vehicle, char* buffer, size_t buffer_size) {

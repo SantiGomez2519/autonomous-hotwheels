@@ -1,6 +1,6 @@
 /**
- * Interfaz gráfica del cliente
- * Maneja la presentación y eventos de usuario
+ * Client graphical interface
+ * Handles presentation and user events
  */
 import javax.swing.*;
 import java.awt.*;
@@ -40,24 +40,24 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
     }
     
     private void initializeGUI() {
-        setTitle("Cliente de Telemetría Vehículo Autónomo - Refactorizado");
+        setTitle("Autonomous Vehicle Telemetry Client - Refactored");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 700);
         setLocationRelativeTo(null);
         
-        // Panel principal
+        // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // Panel superior - Conexión y autenticación
+        // Top panel - Connection and authentication
         JPanel topPanel = createTopPanel();
         mainPanel.add(topPanel, BorderLayout.NORTH);
         
-        // Panel central - Datos del vehículo y controles
+        // Center panel - Vehicle data and controls
         JPanel centerPanel = createCenterPanel();
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         
-        // Panel inferior - Log y usuarios
+        // Bottom panel - Log and users
         JPanel bottomPanel = createBottomPanel();
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
         
@@ -67,9 +67,9 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
     private JPanel createTopPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        panel.setBorder(BorderFactory.createTitledBorder("Conexión y Autenticación"));
+        panel.setBorder(BorderFactory.createTitledBorder("Connection and Authentication"));
         
-        // Configuración de conexión
+        // Connection configuration
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
         
@@ -86,24 +86,24 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
         panel.add(portField, gbc);
         
         gbc.gridx = 4;
-        connectButton = new JButton("Conectar");
+        connectButton = new JButton("Connect");
         connectButton.addActionListener(this);
         panel.add(connectButton, gbc);
         
         gbc.gridx = 5;
-        disconnectButton = new JButton("Desconectar");
+        disconnectButton = new JButton("Disconnect");
         disconnectButton.addActionListener(this);
         disconnectButton.setEnabled(false);
         panel.add(disconnectButton, gbc);
         
-        // Estado de conexión
+        // Connection status
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(new JLabel("Estado:"), gbc);
         gbc.gridx = 1;
-        statusLabel = new JLabel("Desconectado");
+        statusLabel = new JLabel("Disconnected");
         panel.add(statusLabel, gbc);
         
-        // Autenticación
+        // Authentication
         gbc.gridx = 0; gbc.gridy = 2;
         panel.add(new JLabel("Usuario:"), gbc);
         gbc.gridx = 1;
@@ -117,12 +117,12 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
         panel.add(passwordField, gbc);
         
         gbc.gridx = 4;
-        authButton = new JButton("Autenticar");
+        authButton = new JButton("Authenticate");
         authButton.addActionListener(this);
         panel.add(authButton, gbc);
         
         gbc.gridx = 5;
-        authLabel = new JLabel("No autenticado");
+        authLabel = new JLabel("Not authenticated");
         panel.add(authLabel, gbc);
         
         return panel;
@@ -131,61 +131,61 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
     private JPanel createCenterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         
-        // Panel de datos del vehículo
+        // Vehicle data panel
         JPanel dataPanel = new JPanel(new GridLayout(2, 4, 10, 10));
-        dataPanel.setBorder(BorderFactory.createTitledBorder("Datos del Vehículo"));
+        dataPanel.setBorder(BorderFactory.createTitledBorder("Vehicle Data"));
         
-        dataPanel.add(new JLabel("Velocidad:"));
+        dataPanel.add(new JLabel("Speed:"));
         speedLabel = new JLabel(vehicleData.getSpeedDisplay());
         speedLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         dataPanel.add(speedLabel);
         
-        dataPanel.add(new JLabel("Batería:"));
+        dataPanel.add(new JLabel("Battery:"));
         batteryLabel = new JLabel(vehicleData.getBatteryDisplay());
         batteryLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         dataPanel.add(batteryLabel);
         
-        dataPanel.add(new JLabel("Temperatura:"));
+        dataPanel.add(new JLabel("Temperature:"));
         temperatureLabel = new JLabel(vehicleData.getTemperatureDisplay());
         temperatureLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         dataPanel.add(temperatureLabel);
         
-        dataPanel.add(new JLabel("Dirección:"));
+        dataPanel.add(new JLabel("Direction:"));
         directionLabel = new JLabel(vehicleData.getDirection());
         directionLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         dataPanel.add(directionLabel);
         
         panel.add(dataPanel, BorderLayout.NORTH);
         
-        // Panel de controles
+        // Control panel
         JPanel controlPanel = new JPanel(new GridLayout(2, 3, 10, 10));
-        controlPanel.setBorder(BorderFactory.createTitledBorder("Controles"));
+        controlPanel.setBorder(BorderFactory.createTitledBorder("Controls"));
         
-        getDataButton = new JButton("Solicitar Datos");
+        getDataButton = new JButton("Request Data");
         getDataButton.addActionListener(this);
         controlPanel.add(getDataButton);
         
-        speedUpButton = new JButton("Acelerar");
+        speedUpButton = new JButton("Speed Up");
         speedUpButton.addActionListener(this);
         speedUpButton.setEnabled(false);
         controlPanel.add(speedUpButton);
         
-        slowDownButton = new JButton("Frenar");
+        slowDownButton = new JButton("Slow Down");
         slowDownButton.addActionListener(this);
         slowDownButton.setEnabled(false);
         controlPanel.add(slowDownButton);
         
-        turnLeftButton = new JButton("Izquierda");
+        turnLeftButton = new JButton("Turn Left");
         turnLeftButton.addActionListener(this);
         turnLeftButton.setEnabled(false);
         controlPanel.add(turnLeftButton);
         
-        turnRightButton = new JButton("Derecha");
+        turnRightButton = new JButton("Turn Right");
         turnRightButton.addActionListener(this);
         turnRightButton.setEnabled(false);
         controlPanel.add(turnRightButton);
         
-        listUsersButton = new JButton("Listar Usuarios");
+        listUsersButton = new JButton("List Users");
         listUsersButton.addActionListener(this);
         listUsersButton.setEnabled(false);
         controlPanel.add(listUsersButton);
@@ -198,9 +198,9 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
     private JPanel createBottomPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         
-        // Panel de usuarios conectados
+        // Connected users panel
         JPanel usersPanel = new JPanel(new BorderLayout());
-        usersPanel.setBorder(BorderFactory.createTitledBorder("Usuarios Conectados"));
+        usersPanel.setBorder(BorderFactory.createTitledBorder("Connected Users"));
         usersPanel.setPreferredSize(new Dimension(200, 150));
         
         usersList = new JList<>();
@@ -210,9 +210,9 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
         
         panel.add(usersPanel, BorderLayout.EAST);
         
-        // Panel de log
+        // Log panel
         JPanel logPanel = new JPanel(new BorderLayout());
-        logPanel.setBorder(BorderFactory.createTitledBorder("Log de Mensajes"));
+        logPanel.setBorder(BorderFactory.createTitledBorder("Message Log"));
         
         logArea = new JTextArea(10, 50);
         logArea.setEditable(false);
@@ -227,7 +227,7 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
     }
     
     private void setupEventHandlers() {
-        // Cerrar ventana
+        // Close window
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

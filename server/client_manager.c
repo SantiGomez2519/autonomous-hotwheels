@@ -11,7 +11,7 @@ void client_manager_init(client_manager_t* manager) {
     
     manager->client_count = 0;
     
-    // Inicializar array de clientes
+    // Initialize client array
     for (int i = 0; i < MAX_CLIENTS; i++) {
         manager->clients[i].socket = -1;
         manager->clients[i].authenticated = 0;
@@ -20,7 +20,7 @@ void client_manager_init(client_manager_t* manager) {
     }
     
     if (pthread_mutex_init(&manager->mutex, NULL) != 0) {
-        perror("Error inicializando mutex del gestor de clientes");
+        perror("Error initializing client manager mutex");
     }
 }
 
@@ -37,10 +37,10 @@ int client_manager_add_client(client_manager_t* manager, int socket, const char*
     
     if (manager->client_count >= MAX_CLIENTS) {
         pthread_mutex_unlock(&manager->mutex);
-        return -1; // No hay espacio
+        return -1; // No space available
     }
     
-    // Buscar slot vacío
+    // Find empty slot
     int client_index = -1;
     for (int i = 0; i < MAX_CLIENTS; i++) {
         if (manager->clients[i].socket == -1) {
@@ -51,10 +51,10 @@ int client_manager_add_client(client_manager_t* manager, int socket, const char*
     
     if (client_index == -1) {
         pthread_mutex_unlock(&manager->mutex);
-        return -1; // No hay slots disponibles
+        return -1; // No slots available
     }
     
-    // Configurar nuevo cliente
+    // Configure new client
     manager->clients[client_index].socket = socket;
     strncpy(manager->clients[client_index].ip, ip, INET_ADDRSTRLEN - 1);
     manager->clients[client_index].ip[INET_ADDRSTRLEN - 1] = '\0';
@@ -168,7 +168,7 @@ int client_manager_authenticate_client(client_manager_t* manager, int client_ind
         return 0;
     }
     
-    // Verificar credenciales
+    // Verify credentials
     if (strcmp(username, DEFAULT_USERNAME) == 0 && strcmp(password, DEFAULT_PASSWORD) == 0) {
         pthread_mutex_lock(&manager->mutex);
         
@@ -180,8 +180,8 @@ int client_manager_authenticate_client(client_manager_t* manager, int client_ind
         }
         
         pthread_mutex_unlock(&manager->mutex);
-        return 1; // Autenticación exitosa
+        return 1; // Authentication successful
     }
     
-    return 0; // Autenticación fallida
+    return 0; // Authentication failed
 }
