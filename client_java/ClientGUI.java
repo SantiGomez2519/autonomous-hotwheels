@@ -1,24 +1,16 @@
 /**
- * Cliente Java para Sistema de Telemetría Vehículo Autónomo
- * Implementa conexión TCP con el servidor y manejo de comandos
- * Soporta dos tipos de usuarios: Administrador y Observador
- * 
- * Compilación: javac Client.java
- * Ejecución: java Client
+ * Interfaz gráfica del cliente
+ * Maneja la presentación y eventos de usuario
  */
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.net.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Client extends JFrame implements ActionListener {
+public class ClientGUI extends JFrame implements ActionListener, NetworkManager.NetworkEventListener {
     // Componentes de la interfaz
     private JLabel statusLabel, authLabel;
     private JTextField hostField, portField, usernameField;
@@ -30,34 +22,25 @@ public class Client extends JFrame implements ActionListener {
     private JTextArea logArea;
     private JList<String> usersList;
     
-    // Estado de conexión y datos
-    private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
-    private AtomicBoolean connected = new AtomicBoolean(false);
-    private AtomicBoolean authenticated = new AtomicBoolean(false);
-    private AtomicBoolean isAdmin = new AtomicBoolean(false);
-    private String username = "";
+    // Modelo de datos
+    private VehicleData vehicleData;
+    private List<String> connectedUsers;
     
-    // Datos del vehículo
-    private int speed = 0;
-    private int battery = 100;
-    private int temperature = 20;
-    private String direction = "STRAIGHT";
+    // Gestor de red
+    private NetworkManager networkManager;
     
-    // Lista de usuarios conectados
-    private List<String> connectedUsers = new ArrayList<>();
-    
-    // Hilo para recibir mensajes
-    private Thread receiveThread;
-    
-    public Client() {
+    public ClientGUI() {
+        vehicleData = new VehicleData();
+        connectedUsers = new ArrayList<>();
+        networkManager = new NetworkManager(this);
+        
         initializeGUI();
         setupEventHandlers();
+        updateConnectionStatus();
     }
     
     private void initializeGUI() {
-        setTitle("Cliente de Telemetría Vehículo Autónomo");
+        setTitle("Cliente de Telemetría Vehículo Autónomo - Refactorizado");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 700);
         setLocationRelativeTo(null);
@@ -79,9 +62,6 @@ public class Client extends JFrame implements ActionListener {
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
         
         add(mainPanel);
-        
-        // Estado inicial
-        updateConnectionStatus();
     }
     
     private JPanel createTopPanel() {
@@ -156,22 +136,22 @@ public class Client extends JFrame implements ActionListener {
         dataPanel.setBorder(BorderFactory.createTitledBorder("Datos del Vehículo"));
         
         dataPanel.add(new JLabel("Velocidad:"));
-        speedLabel = new JLabel("0 km/h");
+        speedLabel = new JLabel(vehicleData.getSpeedDisplay());
         speedLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         dataPanel.add(speedLabel);
         
         dataPanel.add(new JLabel("Batería:"));
-        batteryLabel = new JLabel("100%");
+        batteryLabel = new JLabel(vehicleData.getBatteryDisplay());
         batteryLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         dataPanel.add(batteryLabel);
         
         dataPanel.add(new JLabel("Temperatura:"));
-        temperatureLabel = new JLabel("20°C");
+        temperatureLabel = new JLabel(vehicleData.getTemperatureDisplay());
         temperatureLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         dataPanel.add(temperatureLabel);
         
         dataPanel.add(new JLabel("Dirección:"));
-        directionLabel = new JLabel("STRAIGHT");
+        directionLabel = new JLabel(vehicleData.getDirection());
         directionLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         dataPanel.add(directionLabel);
         
@@ -251,7 +231,7 @@ public class Client extends JFrame implements ActionListener {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                disconnect();
+                networkManager.disconnect();
                 System.exit(0);
             }
         });
@@ -264,21 +244,21 @@ public class Client extends JFrame implements ActionListener {
         if (source == connectButton) {
             connect();
         } else if (source == disconnectButton) {
-            disconnect();
+            networkManager.disconnect();
         } else if (source == authButton) {
             authenticate();
         } else if (source == getDataButton) {
-            requestData();
+            networkManager.requestData();
         } else if (source == speedUpButton) {
-            sendVehicleCommand("SPEED_UP");
+            networkManager.sendVehicleCommand("SPEED_UP");
         } else if (source == slowDownButton) {
-            sendVehicleCommand("SLOW_DOWN");
+            networkManager.sendVehicleCommand("SLOW_DOWN");
         } else if (source == turnLeftButton) {
-            sendVehicleCommand("TURN_LEFT");
+            networkManager.sendVehicleCommand("TURN_LEFT");
         } else if (source == turnRightButton) {
-            sendVehicleCommand("TURN_RIGHT");
+            networkManager.sendVehicleCommand("TURN_RIGHT");
         } else if (source == listUsersButton) {
-            requestUsersList();
+            networkManager.requestUsersList();
         }
     }
     
@@ -293,55 +273,13 @@ public class Client extends JFrame implements ActionListener {
         
         try {
             int port = Integer.parseInt(portText);
-            socket = new Socket(host, port);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
-            
-            connected.set(true);
-            updateConnectionStatus();
-            logMessage("Conectado al servidor " + host + ":" + port);
-            
-            // Iniciar hilo para recibir mensajes
-            receiveThread = new Thread(this::receiveMessages);
-            receiveThread.setDaemon(true);
-            receiveThread.start();
-            
+            networkManager.connect(host, port);
         } catch (NumberFormatException e) {
             showMessage("Error", "Puerto inválido", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException e) {
-            showMessage("Error", "No se pudo conectar al servidor: " + e.getMessage(), JOptionPane.ERROR_MESSAGE);
-            logMessage("Error conectando: " + e.getMessage());
-        }
-    }
-    
-    private void disconnect() {
-        if (connected.get()) {
-            try {
-                sendCommand("DISCONNECT:");
-                connected.set(false);
-                authenticated.set(false);
-                isAdmin.set(false);
-                username = "";
-                
-                if (socket != null) {
-                    socket.close();
-                }
-                
-                updateConnectionStatus();
-                logMessage("Desconectado del servidor");
-                
-            } catch (IOException e) {
-                logMessage("Error desconectando: " + e.getMessage());
-            }
         }
     }
     
     private void authenticate() {
-        if (!connected.get()) {
-            showMessage("Error", "No hay conexión con el servidor", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
         
@@ -350,147 +288,88 @@ public class Client extends JFrame implements ActionListener {
             return;
         }
         
-        this.username = username;
-        sendCommand("AUTH: " + username + " " + password);
-        logMessage("Intentando autenticación como: " + username);
+        networkManager.authenticate(username, password);
     }
     
-    private void requestData() {
-        if (!connected.get()) {
-            showMessage("Error", "No hay conexión con el servidor", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        sendCommand("GET_DATA:");
-        logMessage("Solicitando datos de telemetría");
-    }
-    
-    private void sendVehicleCommand(String command) {
-        if (!connected.get()) {
-            showMessage("Error", "No hay conexión con el servidor", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (!isAdmin.get()) {
-            showMessage("Error", "Solo administradores pueden enviar comandos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        sendCommand("SEND_CMD: " + command);
-        logMessage("Enviando comando: " + command);
-    }
-    
-    private void requestUsersList() {
-        if (!connected.get()) {
-            showMessage("Error", "No hay conexión con el servidor", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (!isAdmin.get()) {
-            showMessage("Error", "Solo administradores pueden ver usuarios", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        sendCommand("LIST_USERS:");
-        logMessage("Solicitando lista de usuarios");
-    }
-    
-    private void sendCommand(String command) {
-        if (out != null) {
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String message = command + "\r\nUSER: " + username + "\r\nTIMESTAMP: " + timestamp + "\r\n\r\n";
-            out.println(message);
-            logMessage("Enviado: " + command);
-        }
-    }
-    
-    private void receiveMessages() {
-        try {
-            String line;
-            StringBuilder message = new StringBuilder();
-            
-            while (connected.get() && (line = in.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    // Fin del mensaje
-                    processServerMessage(message.toString());
-                    message = new StringBuilder();
-                } else {
-                    message.append(line).append("\n");
-                }
-            }
-        } catch (IOException e) {
-            if (connected.get()) {
-                SwingUtilities.invokeLater(() -> {
-                    logMessage("Error recibiendo mensajes: " + e.getMessage());
-                    disconnect();
-                });
-            }
-        }
-    }
-    
-    private void processServerMessage(String message) {
+    // Implementación de NetworkEventListener
+    @Override
+    public void onConnected() {
         SwingUtilities.invokeLater(() -> {
-            logMessage("Recibido: " + message);
-            
-            if (message.startsWith("AUTH_SUCCESS")) {
-                authenticated.set(true);
-                isAdmin.set(true);
-                authLabel.setText("Autenticado (Admin)");
-                updateAdminControls(true);
-                showMessage("Éxito", "Autenticación exitosa como administrador", JOptionPane.INFORMATION_MESSAGE);
-                
-            } else if (message.startsWith("AUTH_FAILED")) {
-                authenticated.set(false);
-                isAdmin.set(false);
-                authLabel.setText("Autenticación fallida");
-                updateAdminControls(false);
-                showMessage("Error", "Credenciales inválidas", JOptionPane.ERROR_MESSAGE);
-                
-            } else if (message.startsWith("DATA:")) {
-                // Procesar datos de telemetría
-                String[] parts = message.split("\\s+");
-                if (parts.length >= 4) {
-                    try {
-                        speed = Integer.parseInt(parts[1]);
-                        battery = Integer.parseInt(parts[2]);
-                        temperature = Integer.parseInt(parts[3]);
-                        direction = parts.length > 4 ? parts[4] : "STRAIGHT";
-                        
-                        updateVehicleDisplay();
-                        
-                    } catch (NumberFormatException e) {
-                        logMessage("Error parseando datos de telemetría");
-                    }
-                }
-                
-            } else if (message.startsWith("OK:")) {
-                String response = message.substring(3).trim();
-                logMessage("Comando exitoso: " + response);
-                
-            } else if (message.startsWith("ERROR:")) {
-                String error = message.substring(6).trim();
-                logMessage("Error: " + error);
-                showMessage("Error", error, JOptionPane.ERROR_MESSAGE);
-                
-            } else if (message.startsWith("USERS:")) {
-                String usersText = message.substring(6).trim();
-                connectedUsers.clear();
-                if (!usersText.isEmpty()) {
-                    String[] users = usersText.split("\\s+");
-                    for (String user : users) {
-                        connectedUsers.add(user);
-                    }
-                }
-                updateUsersList();
-                
-            } else {
-                logMessage("Mensaje no reconocido: " + message);
-            }
+            updateConnectionStatus();
+            logMessage("Conectado al servidor");
         });
     }
     
+    @Override
+    public void onDisconnected() {
+        SwingUtilities.invokeLater(() -> {
+            updateConnectionStatus();
+            logMessage("Desconectado del servidor");
+        });
+    }
+    
+    @Override
+    public void onAuthenticationSuccess() {
+        SwingUtilities.invokeLater(() -> {
+            authLabel.setText("Autenticado (Admin)");
+            updateAdminControls(true);
+            showMessage("Éxito", "Autenticación exitosa como administrador", JOptionPane.INFORMATION_MESSAGE);
+        });
+    }
+    
+    @Override
+    public void onAuthenticationFailed() {
+        SwingUtilities.invokeLater(() -> {
+            authLabel.setText("Autenticación fallida");
+            updateAdminControls(false);
+            showMessage("Error", "Credenciales inválidas", JOptionPane.ERROR_MESSAGE);
+        });
+    }
+    
+    @Override
+    public void onDataReceived(String message) {
+        SwingUtilities.invokeLater(() -> {
+            logMessage("Recibido: " + message);
+            processServerMessage(message);
+        });
+    }
+    
+    @Override
+    public void onError(String error) {
+        SwingUtilities.invokeLater(() -> {
+            logMessage("Error: " + error);
+            showMessage("Error", error, JOptionPane.ERROR_MESSAGE);
+        });
+    }
+    
+    private void processServerMessage(String message) {
+        if (message.startsWith("DATA:")) {
+            // Procesar datos de telemetría
+            String[] parts = message.split("\\s+");
+            vehicleData.updateFromServerData(parts);
+            updateVehicleDisplay();
+        } else if (message.startsWith("OK:")) {
+            String response = message.substring(3).trim();
+            logMessage("Comando exitoso: " + response);
+        } else if (message.startsWith("ERROR:")) {
+            String error = message.substring(6).trim();
+            logMessage("Error: " + error);
+            showMessage("Error", error, JOptionPane.ERROR_MESSAGE);
+        } else if (message.startsWith("USERS:")) {
+            String usersText = message.substring(6).trim();
+            connectedUsers.clear();
+            if (!usersText.isEmpty()) {
+                String[] users = usersText.split("\\s+");
+                for (String user : users) {
+                    connectedUsers.add(user);
+                }
+            }
+            updateUsersList();
+        }
+    }
+    
     private void updateConnectionStatus() {
-        if (connected.get()) {
+        if (networkManager.isConnected()) {
             statusLabel.setText("Conectado");
             connectButton.setEnabled(false);
             disconnectButton.setEnabled(true);
@@ -516,10 +395,10 @@ public class Client extends JFrame implements ActionListener {
     }
     
     private void updateVehicleDisplay() {
-        speedLabel.setText(speed + " km/h");
-        batteryLabel.setText(battery + "%");
-        temperatureLabel.setText(temperature + "°C");
-        directionLabel.setText(direction);
+        speedLabel.setText(vehicleData.getSpeedDisplay());
+        batteryLabel.setText(vehicleData.getBatteryDisplay());
+        temperatureLabel.setText(vehicleData.getTemperatureDisplay());
+        directionLabel.setText(vehicleData.getDirection());
     }
     
     private void updateUsersList() {
@@ -555,7 +434,7 @@ public class Client extends JFrame implements ActionListener {
         }
         
         SwingUtilities.invokeLater(() -> {
-            new Client().setVisible(true);
+            new ClientGUI().setVisible(true);
         });
     }
 }

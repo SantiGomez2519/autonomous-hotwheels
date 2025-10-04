@@ -1,5 +1,5 @@
-# Makefile para el Servidor de Telemetría Vehículo Autónomo
-# Compila el servidor con soporte para hilos (pthread)
+# Makefile para el Servidor de Telemetría Vehículo Autónomo - Versión Refactorizada
+# Compila el servidor modular con soporte para hilos (pthread)
 
 # Compilador y flags
 CC = gcc
@@ -9,20 +9,25 @@ LDFLAGS = -lpthread
 # Nombre del ejecutable
 TARGET = server
 
-# Archivo fuente
-SOURCE = server.c
+# Archivos fuente (versión refactorizada)
+SOURCES = server_refactored.c socket_manager.c client_manager.c vehicle.c logger.c protocol.c
+OBJECTS = $(SOURCES:.c=.o)
 
 # Regla principal
 all: $(TARGET)
 
-# Compilar el servidor
-$(TARGET): $(SOURCE)
-	$(CC) $(CFLAGS) -o $(TARGET) $(SOURCE) $(LDFLAGS)
-	@echo "Servidor compilado exitosamente: $(TARGET)"
+# Compilar el servidor refactorizado
+$(TARGET): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS)
+	@echo "Servidor refactorizado compilado exitosamente: $(TARGET)"
+
+# Compilar archivos objeto
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Limpiar archivos compilados
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(OBJECTS)
 	@echo "Archivos de compilación eliminados"
 
 # Instalar el servidor (copiar a /usr/local/bin)
@@ -45,20 +50,28 @@ debug: $(TARGET)
 
 # Mostrar ayuda
 help:
-	@echo "Makefile para Servidor de Telemetría"
+	@echo "Makefile para Servidor de Telemetría Refactorizado"
 	@echo ""
 	@echo "Comandos disponibles:"
-	@echo "  make          - Compilar el servidor"
+	@echo "  make          - Compilar el servidor refactorizado"
 	@echo "  make clean    - Eliminar archivos compilados"
 	@echo "  make run      - Ejecutar servidor (puerto 8080)"
 	@echo "  make debug    - Ejecutar con gdb"
 	@echo "  make install  - Instalar en /usr/local/bin"
 	@echo "  make uninstall- Desinstalar"
 	@echo "  make help     - Mostrar esta ayuda"
+	@echo "  make compare  - Comparar versiones"
 	@echo ""
 	@echo "Uso del servidor:"
 	@echo "  ./server <puerto> <archivo_log>"
 	@echo "  Ejemplo: ./server 8080 server.log"
+	@echo ""
+	@echo "Módulos del servidor:"
+	@echo "  - socket_manager: Gestión de sockets"
+	@echo "  - client_manager: Gestión de clientes"
+	@echo "  - vehicle: Estado del vehículo"
+	@echo "  - logger: Sistema de logging"
+	@echo "  - protocol: Procesamiento de comandos"
 
 # Verificar dependencias del sistema
 check-deps:
@@ -87,5 +100,17 @@ debug-build: CFLAGS += -g -DDEBUG
 debug-build: $(TARGET)
 	@echo "Versión debug compilada"
 
+# Comparar con versión original
+compare: $(TARGET)
+	@echo "Comparando versiones..."
+	@echo "Versión original: $(shell wc -l server.c 2>/dev/null || echo 'N/A')"
+	@echo "Versión refactorizada: $(shell wc -l server_refactored.c)"
+	@echo "Módulos adicionales:"
+	@echo "  - socket_manager.c: $(shell wc -l socket_manager.c)"
+	@echo "  - client_manager.c: $(shell wc -l client_manager.c)"
+	@echo "  - vehicle.c: $(shell wc -l vehicle.c)"
+	@echo "  - logger.c: $(shell wc -l logger.c)"
+	@echo "  - protocol.c: $(shell wc -l protocol.c)"
+
 # Regla phony
-.PHONY: all clean install uninstall run debug help check-deps setup valgrind release debug-build
+.PHONY: all clean install uninstall run debug help check-deps setup valgrind release debug-build compare
