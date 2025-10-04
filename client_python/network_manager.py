@@ -27,6 +27,7 @@ class NetworkManager:
         self.on_authentication_failed: Optional[Callable] = None
         self.on_data_received: Optional[Callable[[str], None]] = None
         self.on_error: Optional[Callable[[str], None]] = None
+        self.on_log: Optional[Callable[[str], None]] = None
         
         # Hilo de recepción
         self.receive_thread = None
@@ -52,6 +53,9 @@ class NetworkManager:
             if self.on_connected:
                 self.on_connected()
             
+            if self.on_log:
+                self.on_log(f"Connected to {host}:{port}")
+            
             return True
         except Exception as e:
             if self.on_error:
@@ -68,8 +72,11 @@ class NetworkManager:
                 self.is_admin = False
                 self.running = False
                 self.socket.close()
-                if self.on_disconnected:
-                    self.on_disconnected()
+            if self.on_disconnected:
+                self.on_disconnected()
+            
+            if self.on_log:
+                self.on_log("Disconnected from server")
         except Exception as e:
             if self.on_error:
                 self.on_error(f"Error disconnecting: {str(e)}")
@@ -85,6 +92,8 @@ class NetworkManager:
             self.username = username
             command = f"AUTH: {username} {password}"
             self._send_command(command)
+            if self.on_log:
+                self.on_log(f"Authentication attempt for user: {username}")
             return True
         except Exception as e:
             if self.on_error:
@@ -144,6 +153,8 @@ class NetworkManager:
             message = f"{command}\r\nUSER: {self.username}\r\nTIMESTAMP: {timestamp}\r\n\r\n"
             
             self.socket.send(message.encode('utf-8'))
+            if self.on_log:
+                self.on_log(f"Command sent: {command}")
             return True
         except Exception as e:
             if self.on_error:

@@ -6,11 +6,11 @@ JAVAC = javac
 JAVA = java
 
 # Archivos fuente
-SOURCES = VehicleData.java NetworkManager.java ClientGUI.java
+SOURCES = VehicleData.java NetworkManager.java Main.java
 CLASSES = $(SOURCES:.java=.class)
 
 # Clase principal
-MAIN_CLASS = ClientGUI
+MAIN_CLASS = Main
 
 # Regla principal
 all: $(CLASSES)
@@ -43,7 +43,7 @@ help:
 	@echo "Módulos del cliente:"
 	@echo "  - VehicleData: Modelo de datos del vehículo"
 	@echo "  - NetworkManager: Gestión de comunicación de red"
-	@echo "  - ClientGUI: Interfaz gráfica de usuario"
+	@echo "  - Main: Interfaz gráfica de usuario"
 
 # Comparar con versión original
 compare: $(CLASSES)
@@ -52,7 +52,7 @@ compare: $(CLASSES)
 	@echo "Versión refactorizada:"
 	@echo "  - VehicleData.java: $(shell wc -l VehicleData.java)"
 	@echo "  - NetworkManager.java: $(shell wc -l NetworkManager.java)"
-	@echo "  - ClientGUI.java: $(shell wc -l ClientGUI.java)"
+	@echo "  - Main.java: $(shell wc -l Main.java)"
 
 # Regla phony
 .PHONY: all run clean help compare

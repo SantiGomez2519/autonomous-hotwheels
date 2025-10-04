@@ -49,6 +49,7 @@ class TelemetryGUI:
         self.network_manager.on_authentication_failed = self._on_authentication_failed
         self.network_manager.on_data_received = self._on_data_received
         self.network_manager.on_error = self._on_error
+        self.network_manager.on_log = self._log_message
     
     def _create_widgets(self):
         """Crear todos los widgets de la interfaz"""
@@ -150,8 +151,8 @@ class TelemetryGUI:
         
         self.users_frame.columnconfigure(0, weight=1)
         
-        # === SECCIÓN DE LOG ===
-        log_frame = ttk.LabelFrame(main_frame, text="Log de Mensajes", padding="5")
+        # === LOG SECTION ===
+        log_frame = ttk.LabelFrame(main_frame, text="Message Log", padding="5")
         log_frame.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 10))
         
         self.log_text = scrolledtext.ScrolledText(log_frame, height=10, width=80)
@@ -256,15 +257,15 @@ class TelemetryGUI:
             self.users_listbox.insert(tk.END, user)
     
     def _log_message(self, message):
-        """Agregar mensaje al log"""
+        """Add message to log"""
         timestamp = datetime.now().strftime("%H:%M:%S")
         log_entry = f"[{timestamp}] {message}\n"
         
-        # Ejecutar en hilo principal para evitar problemas de concurrencia
+        # Execute in main thread to avoid concurrency issues
         self.root.after(0, self._append_log, log_entry)
     
     def _append_log(self, message):
-        """Agregar mensaje al log (ejecutar en hilo principal)"""
+        """Add message to log (execute in main thread)"""
         self.log_text.insert(tk.END, message)
         self.log_text.see(tk.END)
     
@@ -301,12 +302,12 @@ class TelemetryGUI:
     # Callbacks del gestor de red
     def _on_connected(self):
         """Callback para conexión exitosa"""
-        self._log_message("Conectado al servidor")
+        self._log_message("Connected to server")
         self._update_connection_status()
     
     def _on_disconnected(self):
         """Callback para desconexión"""
-        self._log_message("Desconectado del servidor")
+        self._log_message("Disconnected from server")
         self._update_connection_status()
         self.auth_var.set("No autenticado")
         self._hide_admin_controls()
@@ -325,7 +326,7 @@ class TelemetryGUI:
     
     def _on_data_received(self, message):
         """Callback para datos recibidos"""
-        self._log_message(f"Recibido: {message}")
+        self._log_message(f"Received: {message}")
         self._process_server_message(message)
     
     def _on_error(self, error):
@@ -344,7 +345,7 @@ class TelemetryGUI:
                 
             elif message.startswith("OK:"):
                 # Comando ejecutado exitosamente
-                self._log_message(f"Comando exitoso: {message[3:]}")
+                self._log_message(f"Command successful: {message[3:]}")
                 
             elif message.startswith("ERROR:"):
                 # Error en comando
@@ -357,10 +358,10 @@ class TelemetryGUI:
                 self._update_users_list(self.connected_users)
                 
             else:
-                self._log_message(f"Mensaje no reconocido: {message}")
+                self._log_message(f"Unrecognized message: {message}")
                 
         except Exception as e:
-            self._log_message(f"Error procesando mensaje: {str(e)}")
+            self._log_message(f"Error processing message: {str(e)}")
     
     def run(self):
         """Ejecutar la aplicación GUI"""

@@ -5,8 +5,8 @@
 PYTHON = python3
 
 # Archivos fuente
-SOURCES = vehicle_data.py network_manager.py telemetry_gui.py
-MAIN_FILE = telemetry_gui.py
+SOURCES = vehicle_data.py network_manager.py main.py
+MAIN_FILE = main.py
 
 # Regla principal
 all:
@@ -39,7 +39,7 @@ help:
 	@echo "Módulos del cliente:"
 	@echo "  - vehicle_data.py: Modelo de datos del vehículo"
 	@echo "  - network_manager.py: Gestión de comunicación de red"
-	@echo "  - telemetry_gui.py: Interfaz gráfica de usuario"
+	@echo "  - main.py: Interfaz gráfica de usuario"
 
 # Comparar con versión original
 compare:
@@ -50,7 +50,7 @@ compare:
 	@echo "Versión refactorizada:"
 	@echo "  - vehicle_data.py: $(shell wc -l vehicle_data.py)"
 	@echo "  - network_manager.py: $(shell wc -l network_manager.py)"
-	@echo "  - telemetry_gui.py: $(shell wc -l telemetry_gui.py)"
+	@echo "  - main.py: $(shell wc -l main.py)"
 
 # Regla phony
 .PHONY: all run check-deps help compare

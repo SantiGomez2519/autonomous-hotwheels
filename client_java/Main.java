@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientGUI extends JFrame implements ActionListener, NetworkManager.NetworkEventListener {
+public class Main extends JFrame implements ActionListener, NetworkManager.NetworkEventListener {
     // Componentes de la interfaz
     private JLabel statusLabel, authLabel;
     private JTextField hostField, portField, usernameField;
@@ -29,7 +29,7 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
     // Gestor de red
     private NetworkManager networkManager;
     
-    public ClientGUI() {
+    public Main() {
         vehicleData = new VehicleData();
         connectedUsers = new ArrayList<>();
         networkManager = new NetworkManager(this);
@@ -434,7 +434,7 @@ public class ClientGUI extends JFrame implements ActionListener, NetworkManager.
         }
         
         SwingUtilities.invokeLater(() -> {
-            new ClientGUI().setVisible(true);
+            new Main().setVisible(true);
         });
     }
 }

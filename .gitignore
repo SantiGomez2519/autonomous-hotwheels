@@ -1,5 +1,11 @@
+# ===========================================
+# AUTONOMOUS HOTWHEELS PROJECT - .gitignore
+# ===========================================
+
+# ===========================================
+# C COMPILED FILES (Server)
+# ===========================================
 *.o
-*.log
 *.out
 *.bin
 *.exe
@@ -9,5 +15,113 @@
 *.a
 *.lib
 *.exp
+
+# ===========================================
+# JAVA COMPILED FILES (Client Java)
+# ===========================================
 *.class
-__pycache__
+*.jar
+*.war
+*.ear
+
+# ===========================================
+# PYTHON CACHE FILES (Client Python)
+# ===========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ===========================================
+# LOG FILES
+# ===========================================
+*.log
+logs/
+log/
+
+# ===========================================
+# IDE AND EDITOR FILES
+# ===========================================
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ===========================================
+# VIRTUAL ENVIRONMENTS
+# ===========================================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# ===========================================
+# TESTING AND COVERAGE
+# ===========================================
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ===========================================
+# TEMPORARY FILES
+# ===========================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# ===========================================
+# SYSTEM FILES
+# ===========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===========================================
+# PROJECT SPECIFIC
+# ===========================================
+# Server logs
+server_logs/
+telemetry_logs/
+
+# Client data
+client_data/
+user_sessions/
