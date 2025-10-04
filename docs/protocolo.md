@@ -1,57 +1,58 @@
-# Protocolo de Aplicación - Sistema de Telemetría Vehículo Autónomo
+# Application Protocol - Autonomous Vehicle Telemetry System
 
-## 1. Visión General
+## 1. Overview
 
-### Propósito
+### Purpose
 
-Este protocolo define la comunicación entre un servidor de telemetría y múltiples clientes para simular un sistema de vehículo autónomo. El protocolo permite el envío de datos de telemetría (velocidad, batería, temperatura) y el control del vehículo mediante comandos.
+This protocol defines the communication between a telemetry server and multiple clients to simulate an autonomous vehicle system. The protocol allows sending telemetry data (speed, battery, temperature) and vehicle control through commands.
 
-### Modelo Cliente-Servidor
+### Client-Server Model
 
-- **Servidor**: Mantiene el estado del vehículo, procesa comandos y envía datos de telemetría
-- **Cliente Administrador**: Puede enviar comandos de control y consultar usuarios conectados
-- **Cliente Observador**: Solo recibe datos de telemetría
+- **Server**: Maintains vehicle state, processes commands and sends telemetry data
+- **Administrator Client**: Can send control commands and query connected users
+- **Observer Client**: Only receives telemetry data
 
-### Capa de Aplicación
+### Application Layer
 
-El protocolo funciona sobre TCP (SOCK_STREAM) para garantizar la confiabilidad de las comunicaciones, especialmente importante para comandos de control.
+The protocol works over TCP (SOCK_STREAM) to ensure communication reliability, especially important for control commands.
 
-## 2. Especificación del Servicio
+## 2. Service Specification
 
-### Comandos Disponibles
+### Available Commands
 
-#### Para Clientes Administradores:
+#### For Administrator Clients:
 
-- `AUTH <username> <password>` - Autenticación de administrador
-- `GET_DATA` - Solicitar datos de telemetría actuales
-- `SEND_CMD <command>` - Enviar comando de control
-- `LIST_USERS` - Listar usuarios conectados
-- `DISCONNECT` - Desconectar del servidor
+- `AUTH <username> <password>` - Administrator authentication
+- `GET_DATA` - Request current telemetry data
+- `SEND_CMD <command>` - Send control command
+- `RECHARGE` - Recharge vehicle battery
+- `LIST_USERS` - List connected users
+- `DISCONNECT` - Disconnect from server
 
-#### Para Clientes Observadores:
+#### For Observer Clients:
 
-- `GET_DATA` - Solicitar datos de telemetría actuales
-- `DISCONNECT` - Desconectar del servidor
+- `GET_DATA` - Request current telemetry data
+- `DISCONNECT` - Disconnect from server
 
-#### Comandos de Control del Vehículo:
+#### Vehicle Control Commands:
 
-- `SPEED_UP` - Aumentar velocidad
-- `SLOW_DOWN` - Disminuir velocidad
-- `TURN_LEFT` - Girar a la izquierda
-- `TURN_RIGHT` - Girar a la derecha
+- `SPEED_UP` - Increase speed
+- `SLOW_DOWN` - Decrease speed
+- `TURN_LEFT` - Turn left
+- `TURN_RIGHT` - Turn right
 
-### Respuestas del Servidor:
+### Server Responses:
 
-- `OK <message>` - Comando ejecutado exitosamente
-- `ERROR <message>` - Error en el comando
-- `DATA <speed> <battery> <temperature> <direction>` - Datos de telemetría
-- `USERS <list>` - Lista de usuarios conectados
-- `AUTH_SUCCESS` - Autenticación exitosa
-- `AUTH_FAILED` - Autenticación fallida
+- `OK <message>` - Command executed successfully
+- `ERROR <message>` - Command error
+- `DATA <speed> <battery> <temperature> <direction>` - Telemetry data
+- `USERS <list>` - List of connected users
+- `AUTH_SUCCESS` - Authentication successful
+- `AUTH_FAILED` - Authentication failed
 
-## 3. Formato de Mensajes
+## 3. Message Format
 
-### Estructura General
+### General Structure
 
 ```
 <COMMAND>: <parameters>
@@ -63,9 +64,9 @@ TIMESTAMP: <timestamp>
 <body>
 ```
 
-### Ejemplos de Mensajes
+### Message Examples
 
-#### Solicitud de Autenticación:
+#### Authentication Request:
 
 ```
 AUTH: admin password123
@@ -75,7 +76,7 @@ PORT: 12345
 TIMESTAMP: 2024-01-15 10:30:45
 ```
 
-#### Comando de Control:
+#### Control Command:
 
 ```
 SEND_CMD: SPEED_UP
@@ -85,7 +86,17 @@ PORT: 12345
 TIMESTAMP: 2024-01-15 10:31:00
 ```
 
-#### Solicitud de Datos:
+#### Battery Recharge Request:
+
+```
+RECHARGE:
+USER: admin
+IP: 192.168.1.100
+PORT: 12345
+TIMESTAMP: 2024-01-15 10:31:10
+```
+
+#### Data Request:
 
 ```
 GET_DATA:
@@ -95,7 +106,7 @@ PORT: 12346
 TIMESTAMP: 2024-01-15 10:31:15
 ```
 
-#### Respuesta de Datos:
+#### Data Response:
 
 ```
 DATA: 45 85 23 LEFT
@@ -103,7 +114,15 @@ SERVER: telemetry_server
 TIMESTAMP: 2024-01-15 10:31:16
 ```
 
-#### Respuesta de Error:
+#### Recharge Response:
+
+```
+OK: Battery recharged to 100%
+SERVER: telemetry_server
+TIMESTAMP: 2024-01-15 10:31:11
+```
+
+#### Error Response:
 
 ```
 ERROR: Invalid command
@@ -111,113 +130,142 @@ SERVER: telemetry_server
 TIMESTAMP: 2024-01-15 10:31:20
 ```
 
-## 4. Reglas de Procedimiento
+## 4. Procedure Rules
 
-### Estados del Cliente:
+### Client States:
 
-1. **CONNECTED** - Cliente conectado, no autenticado
-2. **AUTHENTICATED** - Cliente autenticado como administrador
-3. **OBSERVER** - Cliente en modo observador
-4. **DISCONNECTED** - Cliente desconectado
+1. **CONNECTED** - Client connected, not authenticated
+2. **AUTHENTICATED** - Client authenticated as administrator
+3. **OBSERVER** - Client in observer mode
+4. **DISCONNECTED** - Client disconnected
 
-### Flujo de Comunicación:
+### Communication Flow:
 
-#### Para Administradores:
+#### For Administrators:
 
-1. Cliente se conecta → Estado: CONNECTED
-2. Cliente envía AUTH → Servidor valida credenciales
-3. Si válido → Estado: AUTHENTICATED, respuesta: AUTH_SUCCESS
-4. Si inválido → Estado: CONNECTED, respuesta: AUTH_FAILED
-5. Cliente puede enviar comandos de control
-6. Servidor responde con OK/ERROR
-7. Cliente puede solicitar LIST_USERS
+1. Client connects → State: CONNECTED
+2. Client sends AUTH → Server validates credentials
+3. If valid → State: AUTHENTICATED, response: AUTH_SUCCESS
+4. If invalid → State: CONNECTED, response: AUTH_FAILED
+5. Client can send control commands
+6. Server responds with OK/ERROR
+7. Client can request LIST_USERS
 
-#### Para Observadores:
+#### For Observers:
 
-1. Cliente se conecta → Estado: CONNECTED
-2. Cliente puede solicitar GET_DATA inmediatamente → Estado: OBSERVER
-3. Servidor envía datos periódicamente cada 10 segundos
+1. Client connects → State: CONNECTED
+2. Client can request GET_DATA immediately → State: OBSERVER
+3. Server sends data periodically every 10 seconds
 
-### Manejo de Errores:
+### Error Handling:
 
-- Comandos inválidos: Respuesta ERROR con descripción
-- Cliente desconectado: Remover de lista de usuarios
-- Mensaje malformado: Ignorar y continuar
-- Timeout: Cerrar conexión
+- Invalid commands: ERROR response with description
+- Client disconnected: Remove from user list
+- Malformed message: Ignore and continue
+- Timeout: Close connection
 
-## 5. Ejemplos de Implementación
+## 5. Implementation Examples
 
-### Secuencia de Autenticación de Administrador:
-
-```
-Cliente → Servidor: AUTH admin password123
-Servidor → Cliente: AUTH_SUCCESS
-Cliente → Servidor: SEND_CMD SPEED_UP
-Servidor → Cliente: OK Speed increased to 50 km/h
-Cliente → Servidor: GET_DATA
-Servidor → Cliente: DATA 50 85 23 LEFT
-```
-
-### Secuencia de Cliente Observador:
+### Administrator Authentication Sequence:
 
 ```
-Cliente → Servidor: GET_DATA
-Servidor → Cliente: DATA 45 85 23 LEFT
-[Servidor envía datos cada 10 segundos automáticamente]
-Servidor → Cliente: DATA 47 84 24 STRAIGHT
+Client → Server: AUTH admin password123
+Server → Client: AUTH_SUCCESS
+Client → Server: SEND_CMD SPEED_UP
+Server → Client: OK Speed increased to 50 km/h
+Client → Server: GET_DATA
+Server → Client: DATA 50 85 23 LEFT
 ```
 
-### Secuencia de Listado de Usuarios:
+### Observer Client Sequence:
 
 ```
-Cliente → Servidor: LIST_USERS
-Servidor → Cliente: USERS admin(192.168.1.100:12345) observer1(192.168.1.101:12346)
+Client → Server: GET_DATA
+Server → Client: DATA 45 85 23 LEFT
+[Server sends data every 10 seconds automatically]
+Server → Client: DATA 47 84 24 STRAIGHT
 ```
 
-## 6. Especificaciones Técnicas
+### User List Sequence:
 
-### Codificación:
+```
+Client → Server: LIST_USERS
+Server → Client: USERS admin(192.168.1.100:12345) observer1(192.168.1.101:12346)
+```
 
-- Texto plano ASCII
-- Terminación de línea: \r\n (CRLF)
-- Codificación: UTF-8
+## 6. Technical Specifications
+
+### Encoding:
+
+- Plain ASCII text
+- Line termination: \r\n (CRLF)
+- Encoding: UTF-8
 
 ### Timeouts:
 
-- Conexión: 30 segundos
-- Comando: 10 segundos
-- Telemetría: 10 segundos (automática)
+- Connection: 30 seconds
+- Command: 10 seconds
+- Telemetry: 10 seconds (automatic)
 
-### Límites:
+### Limits:
 
-- Máximo 50 clientes concurrentes
-- Máximo 1024 bytes por mensaje
-- Credenciales persistentes por IP
+- Maximum 50 concurrent clients
+- Maximum 1024 bytes per message
+- Persistent credentials by IP
 
 ### Logging:
 
-- Todos los mensajes se registran con timestamp
-- Formato: [TIMESTAMP] [IP:PORT] [TYPE] [MESSAGE]
-- Tipos: CONNECT, DISCONNECT, COMMAND, RESPONSE, ERROR
+- All messages are logged with timestamp
+- Format: [TIMESTAMP] [IP:PORT] [TYPE] [MESSAGE]
+- Types: CONNECT, DISCONNECT, COMMAND, RESPONSE, ERROR
 
-## 7. Implementación de Seguridad
+## 7. Dynamic Battery System
 
-### Autenticación:
+### Battery Consumption:
 
-- Usuario por defecto: admin
-- Contraseña por defecto: admin123
-- Autenticación basada en IP persistente
-- Sesiones no expiran
+The system implements realistic battery consumption based on vehicle usage:
 
-### Validación:
+- **Base consumption**: 1% per minute when stationary
+- **Additional consumption**: 0.5% per minute per 10 km/h of speed
+- **Consumption examples**:
+  - Stationary vehicle (0 km/h): 1% per minute
+  - Vehicle at 20 km/h: 2% per minute
+  - Vehicle at 50 km/h: 3.5% per minute
+  - Vehicle at 100 km/h: 6% per minute
 
-- Verificar formato de comandos
-- Validar parámetros numéricos
-- Sanitizar entradas de usuario
-- Límites de velocidad y temperatura
+### Temperature System:
+
+Vehicle temperature varies based on usage:
+
+- **Heating**: Increases with speed
+- **Cooling**: Decreases when stationary
+- **Range**: 20°C (minimum) to 50°C (maximum)
+
+### Recharge Command:
+
+- **Command**: `RECHARGE:`
+- **Access**: Only authenticated administrators
+- **Effect**: Battery returns to 100%
+- **Response**: `OK: Battery recharged to 100%`
+
+## 8. Security Implementation
+
+### Authentication:
+
+- Default user: admin
+- Default password: admin123
+- IP-based persistent authentication
+- Sessions do not expire
+
+### Validation:
+
+- Verify command format
+- Validate numeric parameters
+- Sanitize user inputs
+- Speed and temperature limits
 
 ---
 
-**Versión del Protocolo**: 1.0  
-**Fecha**: 2024-01-15  
-**Autor**: Sistema de Telemetría Vehículo Autónomo
+**Protocol Version**: 1.0  
+**Date**: 04/10/2025  
+**Authors**: Santiago Gómez Ospina, Isabella Camacho, Sofía Isaareth Flores.
