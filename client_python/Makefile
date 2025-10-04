@@ -1,4 +1,4 @@
-# Makefile para Cliente Python Refactorizado
+# Makefile para Cliente Python
 # Ejecuta el cliente modular con separación de responsabilidades
 
 # Comando Python
@@ -10,7 +10,7 @@ MAIN_FILE = main.py
 
 # Regla principal
 all:
-	@echo "Cliente Python refactorizado listo para ejecutar"
+	@echo "Cliente Python listo para ejecutar"
 
 # Ejecutar el cliente
 run: check-deps
@@ -27,7 +27,7 @@ check-deps:
 
 # Mostrar ayuda
 help:
-	@echo "Makefile para Cliente Python Refactorizado"
+	@echo "Makefile para Cliente Python"
 	@echo ""
 	@echo "Comandos disponibles:"
 	@echo "  make          - Verificar que el cliente está listo"
@@ -47,7 +47,7 @@ compare:
 	@echo "Versión original:"
 	@echo "  - client.py: $(shell wc -l client.py 2>/dev/null || echo 'N/A')"
 	@echo "  - gui.py: $(shell wc -l gui.py 2>/dev/null || echo 'N/A')"
-	@echo "Versión refactorizada:"
+	@echo "Versión actual:"
 	@echo "  - vehicle_data.py: $(shell wc -l vehicle_data.py)"
 	@echo "  - network_manager.py: $(shell wc -l network_manager.py)"
 	@echo "  - main.py: $(shell wc -l main.py)"

@@ -1,5 +1,5 @@
 /*
- * Autonomous Vehicle Telemetry Server - Refactored Version
+ * Autonomous Vehicle Telemetry Server
  * Implements a client-server system with multi-client support
  * Modular architecture with separation of responsibilities
  * 

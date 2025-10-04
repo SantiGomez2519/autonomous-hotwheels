@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GUI for Autonomous Vehicle Telemetry Client - Refactored Version
+GUI for Autonomous Vehicle Telemetry Client
 Graphical interface using tkinter with separation of responsibilities
 """
 
@@ -23,8 +23,8 @@ class TelemetryGUI:
         
         # Crear ventana principal
         self.root = tk.Tk()
-        self.root.title("Autonomous Vehicle Telemetry Client - Refactored")
-        self.root.geometry("800x600")
+        self.root.title("Autonomous Vehicle Telemetry Client")
+        self.root.geometry("800x800")
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
         
         # Variables de la interfaz
@@ -369,7 +369,7 @@ class TelemetryGUI:
 
 def main():
     """Función principal"""
-    print("Cliente de Telemetría Vehículo Autónomo - Refactorizado")
+    print("Cliente de Telemetría Vehículo Autónomo")
     print("======================================================")
     
     try:

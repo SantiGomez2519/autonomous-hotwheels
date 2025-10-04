@@ -5,8 +5,8 @@ This project implements a client-server system that simulates an autonomous vehi
 ## 🌟 Key Features
 
 - **Modular C Server** with multi-client support using pthreads
-- **Java Client** with Swing GUI (refactored into 3 modules)
-- **Python Client** with Tkinter GUI (refactored into 3 modules)
+- **Java Client** with Swing GUI (modular architecture)
+- **Python Client** with Tkinter GUI (modular architecture)
 - **Custom Protocol** inspired by RFC standards
 - **Complete Logging** to console and file
 - **Authentication System** for administrator users
@@ -24,13 +24,13 @@ autonomous-hotwheels/
 │   ├── vehicle.c/h           # Vehicle state management
 │   ├── client_protocol.c/h   # Client management + Protocol + Logging
 │   └── Makefile              # Build configuration
-├── client_java/              # Java Client (Refactored)
-│   ├── ClientGUI.java        # Main GUI interface
+├── client_java/              # Java Client (Modular)
+│   ├── Main.java             # Main GUI interface
 │   ├── NetworkManager.java   # Network communication
 │   ├── VehicleData.java      # Vehicle data model
 │   └── Makefile              # Build configuration
-├── client_python/            # Python Client (Refactored)
-│   ├── telemetry_gui.py      # Main GUI interface
+├── client_python/            # Python Client (Modular)
+│   ├── main.py               # Main GUI interface
 │   ├── network_manager.py    # Network communication
 │   ├── vehicle_data.py       # Vehicle data model
 │   └── Makefile              # Build configuration
@@ -108,7 +108,7 @@ Or directly:
 
 ```bash
 cd client_python
-python3 telemetry_gui.py
+python3 main.py
 ```
 
 #### Java Client
@@ -123,7 +123,7 @@ Or manually:
 ```bash
 cd client_java
 javac *.java
-java ClientGUI
+java Main
 ```
 
 ## 🎮 System Usage
@@ -320,7 +320,7 @@ The server logs:
 ### Basic Test
 
 1. Start the server: `./server 8080 server.log`
-2. Connect Python client: `python3 telemetry_gui.py`
+2. Connect Python client: `python3 main.py`
 3. Authenticate as admin: username `admin`, password `admin123`
 4. Send command: "Speed Up" button
 5. Verify response in logs

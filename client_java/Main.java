@@ -40,7 +40,7 @@ public class Main extends JFrame implements ActionListener, NetworkManager.Netwo
     }
     
     private void initializeGUI() {
-        setTitle("Autonomous Vehicle Telemetry Client - Refactored");
+        setTitle("Autonomous Vehicle Telemetry Client");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 700);
         setLocationRelativeTo(null);

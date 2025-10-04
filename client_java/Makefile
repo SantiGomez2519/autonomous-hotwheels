@@ -1,4 +1,4 @@
-# Makefile para Cliente Java Refactorizado
+# Makefile para Cliente Java
 # Compila el cliente modular con separación de responsabilidades
 
 # Compilador Java
@@ -14,7 +14,7 @@ MAIN_CLASS = Main
 
 # Regla principal
 all: $(CLASSES)
-	@echo "Cliente Java refactorizado compilado exitosamente"
+	@echo "Cliente Java compilado exitosamente"
 
 # Compilar archivos Java
 %.class: %.java
@@ -31,10 +31,10 @@ clean:
 
 # Mostrar ayuda
 help:
-	@echo "Makefile para Cliente Java Refactorizado"
+	@echo "Makefile para Cliente Java"
 	@echo ""
 	@echo "Comandos disponibles:"
-	@echo "  make          - Compilar el cliente refactorizado"
+	@echo "  make          - Compilar el cliente"
 	@echo "  make run      - Ejecutar el cliente"
 	@echo "  make clean    - Eliminar archivos compilados"
 	@echo "  make help     - Mostrar esta ayuda"
@@ -49,7 +49,7 @@ help:
 compare: $(CLASSES)
 	@echo "Comparando versiones..."
 	@echo "Versión original: $(shell wc -l Client.java 2>/dev/null || echo 'N/A')"
-	@echo "Versión refactorizada:"
+	@echo "Versión actual:"
 	@echo "  - VehicleData.java: $(shell wc -l VehicleData.java)"
 	@echo "  - NetworkManager.java: $(shell wc -l NetworkManager.java)"
 	@echo "  - Main.java: $(shell wc -l Main.java)"

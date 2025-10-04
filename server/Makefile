@@ -1,4 +1,4 @@
-# Makefile para el Servidor de Telemetría Vehículo Autónomo - Versión Refactorizada
+# Makefile para el Servidor de Telemetría Vehículo Autónomo
 # Compila el servidor modular con soporte para hilos (pthread)
 
 # Compilador y flags
@@ -50,10 +50,10 @@ debug: $(TARGET)
 
 # Mostrar ayuda
 help:
-	@echo "Makefile para Servidor de Telemetría Refactorizado"
+	@echo "Makefile para Servidor de Telemetría"
 	@echo ""
 	@echo "Comandos disponibles:"
-	@echo "  make          - Compilar el servidor refactorizado"
+	@echo "  make          - Compilar el servidor"
 	@echo "  make clean    - Eliminar archivos compilados"
 	@echo "  make run      - Ejecutar servidor (puerto 8080)"
 	@echo "  make debug    - Ejecutar con gdb"
@@ -104,7 +104,7 @@ debug-build: $(TARGET)
 compare: $(TARGET)
 	@echo "Comparando versiones..."
 	@echo "Versión original: $(shell wc -l server.c 2>/dev/null || echo 'N/A')"
-	@echo "Versión refactorizada: $(shell wc -l server_refactored.c)"
+	@echo "Versión actual: $(shell wc -l server.c)"
 	@echo "Módulos adicionales:"
 	@echo "  - socket_manager.c: $(shell wc -l socket_manager.c)"
 	@echo "  - client_manager.c: $(shell wc -l client_manager.c)"
