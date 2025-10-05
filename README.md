@@ -69,6 +69,9 @@ autonomous-hotwheels/
 - **Server**: GCC with pthread support
 - **Python Client**: Python 3.6+ with tkinter
 - **Java Client**: Java 8+ with Swing
+- **Operating System**: Linux (for native socket and pthread support)
+  
+  Note: WSL can also be used to run the server on Windows.
 
 ### Verify Dependencies
 
@@ -79,6 +82,13 @@ gcc --version
 python3 -c "import tkinter; print('tkinter available')"
 # Check Java
 java -version
+```
+
+### Update recommended packets (Ubuntu / Debian)
+
+```bash
+sudo apt update
+sudo apt install build-essential
 ```
 
 ## 📖 Execution Instructions
